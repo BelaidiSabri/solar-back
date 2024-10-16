@@ -4,7 +4,7 @@ const { protect } = require("../middlewares/authMiddleware");
 const router = express.Router();
 const upload = require("../middlewares/multer");
 // router.post('/', protect, upload.array('images', 5), createBlog);
-router.post("/", upload.fields([
+router.post("/",protect, upload.fields([
     { name: 'mainImage', maxCount: 1 },
     { name: 'images', maxCount: 5 }
   ]), createBlog);

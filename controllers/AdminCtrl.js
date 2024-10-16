@@ -36,3 +36,52 @@ exports.loginAdmin = async (req, res) => {
     res.status(500).json({ error: 'Failed to log in' });
   }
 };
+
+
+// Change Admin Password
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const admin = await Admin.findById(req.admin.id);
+
+    const isMatch = await admin.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    admin.password = newPassword;
+    await admin.save();
+
+    res.json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// Change Admin Email
+exports.changeEmail = async (req, res) => {
+  try {
+    const { currentPassword, newEmail } = req.body;
+    const admin = await Admin.findById(req.admin.id);
+
+    const isMatch = await admin.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Current password is incorrect' });
+    }
+
+    // Check if the new email already exists
+    const emailExists = await Admin.findOne({ email: newEmail });
+    if (emailExists) {
+      return res.status(400).json({ error: 'Email already in use' });
+    }
+
+    admin.email = newEmail;
+    await admin.save();
+
+    res.json({ message: 'Email updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
